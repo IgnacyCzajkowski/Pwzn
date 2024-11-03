@@ -1,5 +1,6 @@
 import argparse 
 from ising_sim import Ising_2d_sim
+from rich.progress import track 
 
 
 parser = argparse.ArgumentParser()
@@ -24,8 +25,9 @@ simulation = Ising_2d_sim(args.grid_size, args.J, args.beta, args.B,
 if type(args.magnet_file) == str:
     magnet_file = open(args.magnet_file, "w")
 
-for i in range(args.num_of_steps):
-    simulation.paint().save("test_pict_"+str(i)+".png")
+for i in track(range(args.num_of_steps), description="Simulating..."):
+    if type(args.pict_files) == str:
+        simulation.paint().save(args.pict_files+str(i)+".png")
     if type(args.magnet_file) == str:
         magnet_file.write(str(simulation.get_magnetization()) + "\n")
     simulation.perform_step() 
