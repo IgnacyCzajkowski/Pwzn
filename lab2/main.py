@@ -21,8 +21,8 @@ args = parser.parse_args()
 simulation = Ising_2d_sim(args.grid_size, args.J, args.beta, args.B,
                           args.spins_dens)
 
-'''
+
 for i in range(10):
     print(simulation.grid)
+    simulation.paint().save("test_pict_"+str(i)+".png")
     simulation.perform_step()
-''' 

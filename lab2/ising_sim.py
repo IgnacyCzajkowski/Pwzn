@@ -1,12 +1,13 @@
 import numpy as np 
 import random as rnd
+from PIL import Image, ImageDraw  
 
 class Ising_2d_sim():
     def __init__(self, grid_size, J, beta, B, init_spin_dens):
         # Creating simulation grid and initializing spins
         num_pos = int((grid_size ** 2) * 0.5 * (init_spin_dens + 1))
-        init_pos = np.ones(num_pos)
-        init_neg = -1 * np.ones(grid_size ** 2 - num_pos)
+        init_pos = np.ones(num_pos, dtype=int)
+        init_neg = -1 * np.ones(grid_size ** 2 - num_pos, dtype=int)
         init_spins = np.concatenate((init_pos, init_neg))
         np.random.shuffle(init_spins)
         self.grid = init_spins.reshape((grid_size, grid_size))
@@ -45,3 +46,34 @@ class Ising_2d_sim():
     def perform_step(self):
         for _ in range(self.grid.shape[0] * self.grid.shape[1]):
             self.perform_micro_step()
+
+    def paint(self, img_size = (800, 800)):
+        white_rgb = (255, 255, 255)
+        black_rgb = (0, 0, 0)
+        spin_col_dict = {
+            -1: (255, 0, 0),
+            1: (0, 0, 255)
+        }
+        image = Image.new("RGB", img_size, white_rgb)
+        draw = ImageDraw.Draw(image)
+
+        # Get canvas size that makes sense
+        n = self.grid.shape[0]
+        field_n = img_size[0] // n 
+        pad_n = (img_size[0] - field_n * n) // 2 
+        field_color_offset = field_n // 10
+
+        # Draw image
+        draw.rectangle([(pad_n, pad_n), (img_size[0] - pad_n, 
+                        img_size[1] - pad_n)], fill=black_rgb) 
+        for (row, col), field_spin in np.ndenumerate(self.grid):
+            x1_pos = pad_n + col * field_n + field_color_offset 
+            x2_pos = x1_pos + field_n - 2 * field_color_offset
+            
+            y1_pos = pad_n + row * field_n + field_color_offset
+            y2_pos = y1_pos + field_n - 2 * field_color_offset
+
+            field_col = spin_col_dict[field_spin]
+            draw.rectangle([(x1_pos, y1_pos), (x2_pos, y2_pos)],
+                           fill=field_col)
+        return image     
