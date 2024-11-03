@@ -24,13 +24,21 @@ simulation = Ising_2d_sim(args.grid_size, args.J, args.beta, args.B,
 
 if type(args.magnet_file) == str:
     magnet_file = open(args.magnet_file, "w")
+if type(args.anim_file) == str:
+    anim_imgs = []
 
 for i in track(range(args.num_of_steps), description="Simulating..."):
     if type(args.pict_files) == str:
         simulation.paint().save(args.pict_files+str(i)+".png")
+    if type(args.anim_file) == str:
+        anim_imgs.append(simulation.paint())    
     if type(args.magnet_file) == str:
         magnet_file.write(str(simulation.get_magnetization()) + "\n")
     simulation.perform_step() 
 
 if type(args.magnet_file) == str:
     magnet_file.close()    
+if type(args.anim_file) == str:
+    anim_imgs[0].save(args.anim_file, save_all=True, append_images=anim_imgs[1:],
+                      duration=100, loop=0)        
+    
