@@ -76,4 +76,7 @@ class Ising_2d_sim():
             field_col = spin_col_dict[field_spin]
             draw.rectangle([(x1_pos, y1_pos), (x2_pos, y2_pos)],
                            fill=field_col)
-        return image     
+        return image  
+
+    def get_magnetization(self):
+        return self.grid.mean()    

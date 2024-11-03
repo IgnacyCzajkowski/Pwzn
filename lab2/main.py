@@ -21,8 +21,14 @@ args = parser.parse_args()
 simulation = Ising_2d_sim(args.grid_size, args.J, args.beta, args.B,
                           args.spins_dens)
 
+if type(args.magnet_file) == str:
+    magnet_file = open(args.magnet_file, "w")
 
-for i in range(10):
-    print(simulation.grid)
+for i in range(args.num_of_steps):
     simulation.paint().save("test_pict_"+str(i)+".png")
-    simulation.perform_step()
+    if type(args.magnet_file) == str:
+        magnet_file.write(str(simulation.get_magnetization()) + "\n")
+    simulation.perform_step() 
+
+if type(args.magnet_file) == str:
+    magnet_file.close()    
